@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>接口测试服务</title>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+    <script type="text/javascript" src="easyui/jquery.min.js">
+    </script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js">
+    </script>
+</head>
+<body>
+
+<div id="tabs" class="easyui-tabs" style="width:100%;height:auto">
+    <div title="客户端" style="padding:20px;display:none;">
+
+    </div>
+
+    <div title="接口注册" style="overflow:auto;padding:0px;display:none;">
+        <div class="easyui-layout" style="width:100%;height:700px" data-options="fit:true,border:false">
+            <div data-options="region:'west',split:true,border:false" title="接口列表" style="width:270px;">
+                <div class="easyui-layout" style="width:700px;height:350px;" data-options="fit:true">
+                    <div data-options="region:'center',iconCls:'icon-ok',border:false" style="height:500px;">
+                        <ul id="interTree" class="easyui-tree"></ul>
+                    </div>
+                    <div data-options="region:'south',split:true,border:false" style="height:50px;">
+                        <a id="addGroup" href="javascript:void(0)">增加分组</a>
+                        <a id="addInterface" href="javascript:void(0)">增加接口</a>
+                        <a id="delete" href="javascript:void(0)">删除</a>
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'center',title:'接口',border:false">
+                <div class="easyui-panel" data-options="fit:true,border:false">
+                    <div style="padding:10px 60px 20px 10px">
+                        <form id="interForm" method="post">
+                            <table cellpadding="3">
+                                <tr>
+                                    <td>接口名称:</td>
+                                    <td><input id="interFormName" type="text"></input></td>
+                                </tr>
+                                <tr>
+                                    <td>接口地址:</td>
+                                    <td><input id="interAddr" type="text"></input></td>
+                                </tr>
+                                <tr>
+                                    <td>接口返回值（json）:</td>
+                                    <td><input id="interResult" style="height:450px"></input></td>
+                                </tr>
+                            </table>
+                        </form>
+                        <div style="text-align:left;padding:5px">
+                            <a id="registered" href="javascript:void(0)" class="easyui-linkbutton">注册</a>
+                            <span id="reminder" style="color: #ff0000"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="interAdd">
+                <div class="easyui-panel" data-options="fit:true,border:false">
+                    <div style="padding:10px 60px 20px 10px">
+                        <form id="interInitForm" method="post">
+                            <table cellpadding="1">
+                                <tr>
+                                    <td>名称:</td>
+                                    <td><input id="interName" type="text" name="interName"></input></td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div title="接口监听" style="overflow:auto;padding:0px;display:none;">
+        <div class="easyui-layout" style="width:100%;height:680px" data-options="fit:true,border:false">
+            <div data-options="region:'west',split:true,border:false" title="接口列表" style="width:270px;">
+                <ul id="monitorInterTree" class="easyui-tree"></ul>
+            </div>
+            <div data-options="region:'center',title:'监听结果',border:false,fit:true">
+                <div class="easyui-panel" data-options="fit:true,border:false">
+                    <div style="padding:10px 60px 0px 10px">
+                        <form method="post" data-options="fit:true">
+                            <table cellpadding="3">
+                                <tr>
+                                    <td>url:</td>
+                                    <td><input id="monitorUrl" type="text"></input></td>
+                                </tr>
+                                <tr>
+                                    <td>body:</td>
+                                    <td><input id="monitorBody" style="height:350px"></input></td>
+                                </tr>
+                                <tr>
+                                    <td>返回值:</td>
+                                    <td><input id="monitorResult" style="height:200px"></input></td>
+                                </tr>
+                            </table>
+                        </form>
+                        <div style="text-align:left;padding:5px">
+                            <a id="monitor" href="javascript:void(0)" class="easyui-linkbutton">监听</a>
+                            <a id="unmonitor" href="javascript:void(0)" class="easyui-linkbutton">取消监听</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</body>
+<script>
+    $(function () {
+        $('#tabs').tabs({
+            selected: 2
+        });
+    })
+</script>
+<script src="common.js" type="text/javascript"></script>
+<script src="registered.js" type="text/javascript"></script>
+<script src="monitor.js" type="text/javascript"></script>
+</html>
