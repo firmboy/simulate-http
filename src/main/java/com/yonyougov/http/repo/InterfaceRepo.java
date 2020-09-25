@@ -3,6 +3,7 @@ package com.yonyougov.http.repo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yonyougov.http.entity.InterfaceNode;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class InterfaceRepo {
     public static List<InterfaceNode> nodes = Lists.newArrayList();
 
     //接口和节点的对应关系，防止出现重复接口
-    public static Map<String, InterfaceNode> interMaps = Maps.newConcurrentMap();
+    public static Map<String, InterfaceNode> interMaps;
 
     //id和节点的对应关系
     public static Map<String, InterfaceNode> idMpas = Maps.newConcurrentMap();
@@ -31,4 +32,10 @@ public class InterfaceRepo {
 
     //前后端交互的队列
     public static LinkedBlockingQueue<List<InterfaceNode>> queue = new LinkedBlockingQueue(10);
+
+    static {
+        if (ObjectUtils.isEmpty(interMaps)) {
+            interMaps = Maps.newConcurrentMap();
+        }
+    }
 }

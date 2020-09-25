@@ -99,6 +99,7 @@ public class InterfaceRepoPersistence {
     private void loadNode(InterfaceNode node) {
         if (node.getIsLeaf()) {
             RegisUtil.regis(node);
+            ClassLoader classLoader = InterfaceRepo.class.getClassLoader();
             InterfaceRepo.interMaps.put(node.getAddr(), node);
         }
         InterfaceRepo.idMpas.put(node.getId(), node);

@@ -27,6 +27,8 @@ public class MonitorWebSocket {
 
     private Session session;
 
+    private String interId;
+
     /**
      * 连接建立成功调用的方法
      *
@@ -35,6 +37,7 @@ public class MonitorWebSocket {
     @OnOpen
     public void onOpen(@PathParam("interId") String interId, Session session) {
         this.session = session;
+        this.interId = interId;
         MonitorRepo.wsClientMap.add(this);
         CopyOnWriteArrayList<MonitorWebSocket> monitorWebSockets = MonitorRepo.clientKeyMap.get(interId);
         if (ObjectUtils.isEmpty(monitorWebSockets)) {
@@ -51,7 +54,10 @@ public class MonitorWebSocket {
      */
     @OnClose
     public void onClose() {
-        MonitorRepo.wsClientMap.remove(this);
+        CopyOnWriteArrayList<MonitorWebSocket> monitorWebSockets = MonitorRepo.clientKeyMap.get(interId);
+        if (!ObjectUtils.isEmpty(monitorWebSockets)) {
+            monitorWebSockets.remove(this);
+        }
         //subOnlineCount();
         log.info("有一链接关闭，当前链接数为：" + MonitorRepo.wsClientMap.size());
     }

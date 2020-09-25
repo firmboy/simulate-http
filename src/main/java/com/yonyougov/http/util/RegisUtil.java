@@ -1,13 +1,16 @@
 package com.yonyougov.http.util;
 
 import com.itranswarp.compiler.JavaStringCompiler;
+import com.yonyougov.http.compiler.MemoryClassLoader;
 import com.yonyougov.http.entity.InterfaceNode;
+import com.yonyougov.http.registered.RegisService;
 import com.yonyougov.http.repo.InterfaceRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +27,7 @@ public class RegisUtil {
 
     static final String JAVA_SOURCE_CODE = "package com.yonyougov.http.registered;\n" +
             "\n" +
-            "import com.alibaba.fastjson.JSONObject;\n" +
+            "import com.yonyougov.http.util.WebSocketUtil;\n" +
             "import org.slf4j.Logger;\n" +
             "import org.slf4j.LoggerFactory;\n" +
             "import org.springframework.web.bind.annotation.RequestMapping;\n" +
@@ -32,23 +35,18 @@ public class RegisUtil {
             "\n" +
             "import javax.servlet.http.HttpServletRequest;\n" +
             "import javax.servlet.http.HttpServletResponse;\n" +
-            "import java.util.HashMap;\n" +
             "import java.util.Map;\n" +
             "\n" +
             "@RestController\n" +
             "public class SERVICE_NAMETemplateController {\n" +
-            "    private static Logger log = LoggerFactory.getLogger(TemplateController.class);\n" +
+            "    private static Logger log = LoggerFactory.getLogger(SERVICE_NAMETemplateController.class);\n" +
             "\n" +
             "    @RequestMapping(\"/ADDR\")\n" +
             "    public Map template(HttpServletRequest request, HttpServletResponse response) {\n" +
-            "\n" +
-            "        String s = \"RESULT\";\n" +
-            "        Map result = JSONObject.parseObject(s, HashMap.class);\n" +
-            "\n" +
-            "        return result;\n" +
+            "        return WebSocketUtil.deal(request, response);\n" +
             "    }\n" +
             "\n" +
-            "}";
+            "}\n";
 
     static Pattern p = Pattern.compile("\\s*|\t|\r|\n");
 
@@ -64,15 +62,42 @@ public class RegisUtil {
             Matcher m = p.matcher(result);
             result = m.replaceAll("");
 
+            ClassLoader classLoader1 = RegisUtil.class.getClassLoader();
+            log.info("classLoader1类加载器：" + classLoader1.toString());
+            ApplicationContext applicationContext = SpringBeanUtils.getApplicationContext();
+            RegisService bean = applicationContext.getBean(RegisService.class);
+            ClassLoader classLoader = bean.getClass().getClassLoader();
+            log.info("bean类加载器：" + classLoader.toString());
+
             replace = StringUtils.replace(replace, "RESULT", result);
             log.info(replace);
             results = compiler.compile(serviceName + "TemplateController.java", replace);
-            Class<?> clazz = compiler.loadClass("com.yonyougov.http.registered." + serviceName + "TemplateController", results);
-            ApplicationContext applicationContext = SpringBeanUtils.getApplicationContext();
+            byte[] buf = results.get(serviceName + "TemplateController.java");
+            Class<?> clazz = loadClass("com.yonyougov.http.registered." + serviceName + "TemplateController", results);
+            //URLClassLoader classLoader = (URLClassLoader) RegisUtil.class.getClassLoader();
+            //classLoader.defineClass(serviceName + "TemplateController.java", buf, 0, buf.length);
             MappingRegulator.controlCenter(clazz, applicationContext, 1);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    public static Class<?> loadClass(String name, Map<String, byte[]> classBytes) throws ClassNotFoundException, IOException {
+        ClassLoader classLoader1 = RegisUtil.class.getClassLoader();
+        log.info("类加载器：" + classLoader1.toString());
+        MemoryClassLoader classLoader = new MemoryClassLoader(classLoader1, classBytes);
+        Throwable var4 = null;
+        Class var5;
+        try {
+            var5 = classLoader.loadClass(name);
+        } catch (Throwable var14) {
+            var4 = var14;
+            throw var14;
+        } finally {
+
+        }
+        return var5;
     }
 
 
