@@ -6,12 +6,10 @@ import com.google.common.collect.Maps;
 import com.yonyougov.http.entity.InterfaceNode;
 import com.yonyougov.http.entity.WebSocketMessage;
 import com.yonyougov.http.monitor.MonitorWebSocket;
-import com.yonyougov.http.registered.RegisService;
 import com.yonyougov.http.repo.InterfaceRepo;
 import com.yonyougov.http.repo.MonitorRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,12 +32,8 @@ public class WebSocketUtil {
 
     public static Map deal(HttpServletRequest request, HttpServletResponse response) {
         String requestURI = request.getRequestURI();
-
-        ClassLoader classLoader = InterfaceRepo.class.getClassLoader();
+        
         InterfaceNode interfaceNode = InterfaceRepo.interMaps.get(requestURI);
-        ApplicationContext applicationContext = SpringBeanUtils.getApplicationContext();
-        RegisService bean = applicationContext.getBean(RegisService.class);
-        ClassLoader classLoader1 = WebSocketUtil.class.getClassLoader();
         if (!ObjectUtils.isEmpty(interfaceNode)) {
             StringBuffer sb = new StringBuffer();
             Map<String, String[]> parameterMap = request.getParameterMap();
