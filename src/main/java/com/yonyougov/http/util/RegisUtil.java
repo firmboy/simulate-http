@@ -38,7 +38,7 @@ public class RegisUtil {
             "public class SERVICE_NAMETemplateController {\n" +
             "    private static Logger log = LoggerFactory.getLogger(SERVICE_NAMETemplateController.class);\n" +
             "\n" +
-            "    @RequestMapping(\"/ADDR\")\n" +
+            "    @RequestMapping(\"ADDR\")\n" +
             "    public Map template(HttpServletRequest request, HttpServletResponse response) {\n" +
             "        return WebSocketUtil.deal(request, response);\n" +
             "    }\n" +
@@ -74,10 +74,6 @@ public class RegisUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static String buildClassPath(String s) {
-        return s;
     }
 
 
