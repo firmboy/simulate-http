@@ -28,6 +28,8 @@ public class InterfaceRepo {
     //id和节点的对应关系
     public static Map<String, InterfaceNode> idMpas = Maps.newConcurrentMap();
 
+    public static Map<String, Class> idClassMaps = Maps.newConcurrentMap();
+
     public static AtomicInteger count = new AtomicInteger(0);
 
     //前后端交互的队列

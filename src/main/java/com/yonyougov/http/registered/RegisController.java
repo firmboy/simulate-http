@@ -50,6 +50,13 @@ public class RegisController {
         return Response.successReponse(node);
     }
 
+    @RequestMapping("/unregistered")
+    public Response unregistered(@RequestBody InterfaceNode node) {
+        regisService.unregistered(node);
+        log.info(node.toString());
+        return Response.successReponse(node);
+    }
+
     @RequestMapping("/delete")
     public Response delete(@RequestBody InterfaceNode node) {
         regisService.delete(node);

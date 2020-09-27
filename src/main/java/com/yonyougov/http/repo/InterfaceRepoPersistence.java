@@ -98,9 +98,12 @@ public class InterfaceRepoPersistence {
 
     private void loadNode(InterfaceNode node) {
         if (node.getIsLeaf()) {
-            RegisUtil.regis(node);
-            ClassLoader classLoader = InterfaceRepo.class.getClassLoader();
-            InterfaceRepo.interMaps.put(node.getAddr(), node);
+            if (!ObjectUtils.isEmpty(node.getAddr()) && !ObjectUtils.isEmpty(node.getResult())) {
+                if (node.getHasRegis()) {
+                    RegisUtil.regis(node);
+                    InterfaceRepo.interMaps.put(node.getAddr(), node);
+                }
+            }
         }
         InterfaceRepo.idMpas.put(node.getId(), node);
         List<InterfaceNode> children = node.getChildren();

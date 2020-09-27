@@ -25,9 +25,10 @@ function monitorInit() {
                 selectMonitorNode = node;
                 if (node.isLeaf) {
                     //接口
+                    disableButton("monitor");
                     enableButton("monitor", monitor);
                 } else {
-                    disableButton("monitor", monitor);
+                    disableButton("monitor");
                 }
             }
         }
@@ -61,7 +62,8 @@ function loadMonitorTree() {
 
 function monitor() {
     monitorFlag = true;
-    disableButton("monitor", monitor);
+    disableButton("monitor");
+    disableButton("unmonitor");
     enableButton("unmonitor", unmonitor);
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
@@ -96,7 +98,8 @@ function monitor() {
 function unmonitor() {
     monitorFlag = false;
     $('#monitorTime').text('');
-    disableButton("unmonitor", unmonitor);
+    disableButton("unmonitor");
+    disableButton("monitor");
     enableButton("monitor", monitor);
     if (websocket) {
         websocket.close();

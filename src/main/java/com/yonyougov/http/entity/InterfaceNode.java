@@ -25,6 +25,8 @@ public class InterfaceNode {
 
     private String pId;
 
+    private boolean hasRegis;
+
     public String getId() {
         return id;
     }
@@ -81,6 +83,14 @@ public class InterfaceNode {
         this.pId = pId;
     }
 
+    public boolean getHasRegis() {
+        return hasRegis;
+    }
+
+    public void setHasRegis(boolean hasRegis) {
+        this.hasRegis = hasRegis;
+    }
+
     @Override
     public String toString() {
         return "InterfaceNode{" +
@@ -91,6 +101,7 @@ public class InterfaceNode {
                 ", children=" + children +
                 ", isLeaf=" + isLeaf +
                 ", pId='" + pId + '\'' +
+                ", hasRegis=" + hasRegis +
                 '}';
     }
 }

@@ -6,9 +6,9 @@ import groovy.lang.GroovyClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,21 +47,30 @@ public class RegisUtil {
 
     static Pattern p = Pattern.compile("\\s*|\t|\r|\n");
 
-    public static void regis(String serviceName, String addr, String result) {
+    public static void regis(String serviceName, String addr, String result, String id, Integer type) {
         try {
-            String replace = StringUtils.replace(JAVA_SOURCE_CODE, "SERVICE_NAME", serviceName);
-            replace = StringUtils.replace(replace, "ADDR", addr);
-            result = result.replace("\"", "\\\"");
-            //去除回车换行
-            Matcher m = p.matcher(result);
-            result = m.replaceAll("");
-            
-            replace = StringUtils.replace(replace, "RESULT", result);
-            GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
-            Class aClass = groovyClassLoader.parseClass(replace);
+            Class aClass = null;
+            aClass = InterfaceRepo.idClassMaps.get(id);
+            if (ObjectUtils.isEmpty(aClass)) {
+                String replace = StringUtils.replace(JAVA_SOURCE_CODE, "SERVICE_NAME", serviceName);
+                replace = StringUtils.replace(replace, "ADDR", addr);
+                if (ObjectUtils.isEmpty(result)) {
+                    return;
+                }
+                result = result.replace("\"", "\\\"");
+                //去除回车换行
+                Matcher m = p.matcher(result);
+                result = m.replaceAll("");
 
+                replace = StringUtils.replace(replace, "RESULT", result);
+
+                GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
+                aClass = groovyClassLoader.parseClass(replace);
+
+                InterfaceRepo.idClassMaps.put(id, aClass);
+            }
             ApplicationContext applicationContext = SpringBeanUtils.getApplicationContext();
-            MappingRegulator.controlCenter(aClass, applicationContext, 1);
+            MappingRegulator.controlCenter(aClass, applicationContext, type);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -73,10 +82,13 @@ public class RegisUtil {
 
 
     public static void regis(InterfaceNode node) {
-        Map<String, byte[]> results = null;
         int i = InterfaceRepo.count.addAndGet(1);
         String serviceName = "Reigs" + i;
-        regis(serviceName, node.getAddr(), node.getResult());
+        regis(serviceName, node.getAddr(), node.getResult(), node.getId(), 1);
+    }
+
+    public static void unregis(InterfaceNode node) {
+        regis(null, null, null, node.getId(), 3);
     }
 
 }

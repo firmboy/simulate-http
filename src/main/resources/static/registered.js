@@ -65,13 +65,22 @@ function init() {
             if (node) {
                 selectNode = node;
                 if (node.isLeaf) {
-                    enableButton("registered", registered);
+                    if (node.hasRegis) {
+                        disableButton("registered");
+                        disableButton("unregistered");
+                        enableButton("unregistered", unregistered);
+                    } else {
+                        disableButton("unregistered");
+                        disableButton("registered");
+                        enableButton("registered", registered);
+                    }
                     $('#reminder').text("接口");
                     $('#interAddr').textbox('setValue', node.addr);
                     $('#interResult').textbox('setValue', node.result);
                     $('#interFormName').textbox('setValue', node.text);
                 } else {
                     disableButton("registered");
+                    disableButton("unregistered");
                     $('#reminder').text("分组");
                     $('#interAddr').textbox('setValue', "");
                     $('#interResult').textbox('setValue', "");
@@ -147,6 +156,8 @@ function init() {
     $('#interName').textbox({
         width: 200
     });
+    disableButton("registered");
+    disableButton("unregistered");
 }
 
 function loadTree() {
@@ -163,12 +174,13 @@ function registered() {
         selectNode.addr = interAddr;
         selectNode.result = interResult;
         selectNode.text = interFormName;
+        selectNode.hasRegis = true;
         $.ajax("registered", {
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify(selectNode)
         }).done(function (data) {
-            if (data.flag = "success") {
+            if (data.flag == "success") {
                 $.messager.alert('结果', '注册成功');
                 loadTree();
             } else {
@@ -179,4 +191,22 @@ function registered() {
     } else {
         $.messager.alert('Warning', '地址和返回值必填');
     }
+}
+
+//取消注册
+function unregistered() {
+    selectNode.hasRegis = false;
+    $.ajax("unregistered", {
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(selectNode)
+    }).done(function (data) {
+        if (data.flag == "success") {
+            $.messager.alert('结果', '取消注册成功');
+            loadTree();
+        } else {
+            $.messager.alert('结果', data.msg);
+        }
+
+    });
 }

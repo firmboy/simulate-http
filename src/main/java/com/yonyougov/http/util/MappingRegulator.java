@@ -55,5 +55,6 @@ public class MappingRegulator {
 
     public static void unRegisterMapping(RequestMappingHandlerMapping requestMappingHandlerMapping, RequestMappingInfo mappingInfo) throws Exception, IllegalAccessException {
         requestMappingHandlerMapping.unregisterMapping(mappingInfo);
+        
     }
 }
