@@ -8,15 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 @RestController
-public class TemplateController {
-    private static Logger log = LoggerFactory.getLogger(TemplateController.class);
+public class StringTemplateController {
+    private static Logger log = LoggerFactory.getLogger(StringTemplateController.class);
 
-    @RequestMapping("/ADDR")
-    public Map template(HttpServletRequest request, HttpServletResponse response) {
-        return WebSocketUtil.deal(request, response);
+    @RequestMapping("ADDR")
+    public String template(HttpServletRequest request, HttpServletResponse response) {
+        return WebSocketUtil.dealString(request, response);
     }
 
 }

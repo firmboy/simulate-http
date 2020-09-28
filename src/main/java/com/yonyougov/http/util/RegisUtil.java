@@ -9,7 +9,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -22,7 +21,7 @@ import java.util.regex.Pattern;
 public class RegisUtil {
     private static Logger log = LoggerFactory.getLogger(RegisUtil.class);
 
-    static final String JAVA_SOURCE_CODE = "package com.yonyougov.http.registered;\n" +
+    static final String JAVA_SOURCE_CODE_JSON = "package com.yonyougov.http.registered;\n" +
             "\n" +
             "import com.yonyougov.http.util.WebSocketUtil;\n" +
             "import org.slf4j.Logger;\n" +
@@ -35,39 +34,62 @@ public class RegisUtil {
             "import java.util.Map;\n" +
             "\n" +
             "@RestController\n" +
-            "public class SERVICE_NAMETemplateController {\n" +
-            "    private static Logger log = LoggerFactory.getLogger(SERVICE_NAMETemplateController.class);\n" +
+            "public class SERVICE_NAMEJsonTemplateController {\n" +
+            "    private static Logger log = LoggerFactory.getLogger(SERVICE_NAMEJsonTemplateController.class);\n" +
             "\n" +
             "    @RequestMapping(\"ADDR\")\n" +
             "    public Map template(HttpServletRequest request, HttpServletResponse response) {\n" +
             "        return WebSocketUtil.deal(request, response);\n" +
             "    }\n" +
             "\n" +
-            "}\n";
+            "}";
+
+
+    static final String JAVA_SOURCE_CODE_STRING = "package com.yonyougov.http.registered;\n" +
+            "\n" +
+            "import com.yonyougov.http.util.WebSocketUtil;\n" +
+            "import org.slf4j.Logger;\n" +
+            "import org.slf4j.LoggerFactory;\n" +
+            "import org.springframework.web.bind.annotation.RequestMapping;\n" +
+            "import org.springframework.web.bind.annotation.RestController;\n" +
+            "\n" +
+            "import javax.servlet.http.HttpServletRequest;\n" +
+            "import javax.servlet.http.HttpServletResponse;\n" +
+            "\n" +
+            "@RestController\n" +
+            "public class SERVICE_NAMEStringTemplateController {\n" +
+            "    private static Logger log = LoggerFactory.getLogger(SERVICE_NAMEStringTemplateController.class);\n" +
+            "\n" +
+            "    @RequestMapping(\"ADDR\")\n" +
+            "    public String template(HttpServletRequest request, HttpServletResponse response) {\n" +
+            "        return WebSocketUtil.dealString(request, response);\n" +
+            "    }\n" +
+            "\n" +
+            "}";
 
     static Pattern p = Pattern.compile("\\s*|\t|\r|\n");
 
-    public static void regis(String serviceName, String addr, String result, String id, Integer type) {
+    public static void regis(String serviceName, InterfaceNode node, Integer type) {
         try {
             Class aClass = null;
-            aClass = InterfaceRepo.idClassMaps.get(id);
+            aClass = InterfaceRepo.idClassMaps.get(node.getId());
             if (ObjectUtils.isEmpty(aClass)) {
-                String replace = StringUtils.replace(JAVA_SOURCE_CODE, "SERVICE_NAME", serviceName);
-                replace = StringUtils.replace(replace, "ADDR", addr);
-                if (ObjectUtils.isEmpty(result)) {
+                String replace = "";
+                if (node.getResultType().equals("json")) {
+                    replace = StringUtils.replace(JAVA_SOURCE_CODE_JSON, "SERVICE_NAME", serviceName);
+                } else {
+                    replace = StringUtils.replace(JAVA_SOURCE_CODE_STRING, "SERVICE_NAME", serviceName);
+                }
+
+                replace = StringUtils.replace(replace, "ADDR", node.getAddr());
+                if (ObjectUtils.isEmpty(node.getResult())) {
                     return;
                 }
-                result = result.replace("\"", "\\\"");
-                //去除回车换行
-                Matcher m = p.matcher(result);
-                result = m.replaceAll("");
-
-                replace = StringUtils.replace(replace, "RESULT", result);
 
                 GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
                 aClass = groovyClassLoader.parseClass(replace);
 
-                InterfaceRepo.idClassMaps.put(id, aClass);
+                InterfaceRepo.idClassMaps.put(node.getId(), aClass);
             }
             ApplicationContext applicationContext = SpringBeanUtils.getApplicationContext();
             MappingRegulator.controlCenter(aClass, applicationContext, type);
@@ -80,11 +102,11 @@ public class RegisUtil {
     public static void regis(InterfaceNode node) {
         int i = InterfaceRepo.count.addAndGet(1);
         String serviceName = "Reigs" + i;
-        regis(serviceName, node.getAddr(), node.getResult(), node.getId(), 1);
+        regis(serviceName, node, 1);
     }
 
     public static void unregis(InterfaceNode node) {
-        regis(null, null, null, node.getId(), 3);
+        regis(null, node, 3);
     }
 
 }

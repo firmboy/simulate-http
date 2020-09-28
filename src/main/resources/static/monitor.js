@@ -78,6 +78,14 @@ function monitor() {
         $('#monitorReminder').text("监听中");
     }
 
+    //连接发生错误的回调方法
+    websocket.onerror = function (event) {
+        disableButton("monitor");
+        disableButton("unmonitor");
+        enableButton("monitor", monitor);
+        $.messager.alert('Warning', '接口还未注册');
+    };
+
     //接收到消息的回调方法
     websocket.onmessage = function (event) {
         var result = JSON.parse(event.data);

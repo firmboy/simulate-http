@@ -60,10 +60,12 @@ public class RegisService {
     public InterfaceNode registered(InterfaceNode node) {
         //先判断结果是否能为json字符串
         String result = node.getResult();
-        try {
-            JSONObject.parseObject(result, HashMap.class);
-        } catch (Exception e) {
-            throw InterfaceException.getInstance("返回值json格式不正确");
+        if (node.getResultType().equals("json")) {
+            try {
+                JSONObject.parseObject(result, HashMap.class);
+            } catch (Exception e) {
+                throw InterfaceException.getInstance("返回值json格式不正确");
+            }
         }
         //判断接口是否有重复，没有的话
         InterfaceNode addrNode = InterfaceRepo.interMaps.get(node.getAddr());
@@ -72,7 +74,7 @@ public class RegisService {
                 throw InterfaceException.getInstance("该接口地址已经存在，请勿重复注册");
             } else {
                 if (addrNode.getHasRegis()) {
-                    throw InterfaceException.getInstance("该接口地址注册");
+                    throw InterfaceException.getInstance("该接口地址已注册");
                 }
             }
         }
@@ -112,6 +114,7 @@ public class RegisService {
         target.setResult(source.getResult());
         target.setText(source.getText());
         target.setHasRegis(source.getHasRegis());
+        target.setResultType(source.getResultType());
     }
 
     public void delete(InterfaceNode node) {

@@ -19,6 +19,16 @@ public class InterfaceNode {
 
     private String result;
 
+    private String resultType;
+
+    public String getResultType() {
+        return resultType;
+    }
+
+    public void setResultType(String resultType) {
+        this.resultType = resultType;
+    }
+
     private List<InterfaceNode> children;
 
     private boolean isLeaf;

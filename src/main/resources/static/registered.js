@@ -76,6 +76,12 @@ function init() {
                     }
                     $('#reminder').text("接口");
                     $('#interAddr').textbox('setValue', node.addr);
+                    $('#interResultType').textbox('setValue', node.resultType);
+                    if (node.addr) {
+                        $('#interResultType').textbox('disable');
+                    } else {
+                        $('#interResultType').textbox('enable');
+                    }
                     $('#interResult').textbox('setValue', node.result);
                     $('#interFormName').textbox('setValue', node.text);
                 } else {
@@ -83,6 +89,7 @@ function init() {
                     disableButton("unregistered");
                     $('#reminder').text("分组");
                     $('#interAddr').textbox('setValue', "");
+                    $('#interResultType').textbox('setValue', "json");
                     $('#interResult').textbox('setValue', "");
                     $('#interFormName').textbox('setValue', node.result);
                 }
@@ -170,9 +177,11 @@ function registered() {
     var interFormName = $('#interFormName').textbox('getValue');
     var interAddr = $('#interAddr').textbox('getValue');
     var interResult = $('#interResult').textbox('getValue');
+    var interResultType = $('#interResultType').textbox('getValue');
     if (interFormName && interAddr && interResult) {
         selectNode.addr = interAddr;
         selectNode.result = interResult;
+        selectNode.resultType = interResultType;
         selectNode.text = interFormName;
         selectNode.hasRegis = true;
         $.ajax("registered", {

@@ -1,6 +1,9 @@
 package com.yonyougov.http.monitor;
 
 import com.google.common.collect.Lists;
+import com.yonyougov.http.entity.InterfaceNode;
+import com.yonyougov.http.excepetion.InterfaceException;
+import com.yonyougov.http.repo.InterfaceRepo;
 import com.yonyougov.http.repo.MonitorRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,15 +41,21 @@ public class MonitorWebSocket {
     public void onOpen(@PathParam("interId") String interId, Session session) {
         this.session = session;
         this.interId = interId;
-        MonitorRepo.wsClientMap.add(this);
-        CopyOnWriteArrayList<MonitorWebSocket> monitorWebSockets = MonitorRepo.clientKeyMap.get(interId);
-        if (ObjectUtils.isEmpty(monitorWebSockets)) {
-            monitorWebSockets = Lists.newCopyOnWriteArrayList();
-            MonitorRepo.clientKeyMap.put(interId, monitorWebSockets);
+        InterfaceNode interfaceNode = InterfaceRepo.idMpas.get(interId);
+        if (interfaceNode.getHasRegis()) {
+            MonitorRepo.wsClientMap.add(this);
+            CopyOnWriteArrayList<MonitorWebSocket> monitorWebSockets = MonitorRepo.clientKeyMap.get(interId);
+            if (ObjectUtils.isEmpty(monitorWebSockets)) {
+                monitorWebSockets = Lists.newCopyOnWriteArrayList();
+                MonitorRepo.clientKeyMap.put(interId, monitorWebSockets);
+            }
+            monitorWebSockets.add(this);
+            //addOnlineCount();
+            log.info(session.getId() + "有新链接加入，当前链接数为：" + MonitorRepo.wsClientMap.size());
+        } else {
+            throw InterfaceException.getInstance("当前接口还未注册，请先注册接口");
         }
-        monitorWebSockets.add(this);
-        //addOnlineCount();
-        log.info(session.getId() + "有新链接加入，当前链接数为：" + MonitorRepo.wsClientMap.size());
+
     }
 
     /**

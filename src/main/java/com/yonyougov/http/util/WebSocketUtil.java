@@ -30,9 +30,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class WebSocketUtil {
     private static Logger log = LoggerFactory.getLogger(WebSocketUtil.class);
 
-    public static Map deal(HttpServletRequest request, HttpServletResponse response) {
+    public static String dealString(HttpServletRequest request, HttpServletResponse response) {
         String requestURI = request.getRequestURI();
-        
+
         InterfaceNode interfaceNode = InterfaceRepo.interMaps.get(requestURI);
         if (!ObjectUtils.isEmpty(interfaceNode)) {
             StringBuffer sb = new StringBuffer();
@@ -55,11 +55,20 @@ public class WebSocketUtil {
             webSocketMessage.setTime(DateUtil.now());
             sendMessage(interfaceNode.getId(), webSocketMessage);
             String result = interfaceNode.getResult();
-            return JSONObject.parseObject(result, HashMap.class);
+            return result;
         } else {
+            return "没有匹配到对应的接口";
+        }
+    }
+
+    public static Map deal(HttpServletRequest request, HttpServletResponse response) {
+        String s = dealString(request, response);
+        if (s.equals("没有匹配到对应的接口")) {
             Map map = Maps.newHashMap();
             map.put("msg", "没有匹配到对应的接口");
             return map;
+        } else {
+            return JSONObject.parseObject(s, HashMap.class);
         }
     }
 
