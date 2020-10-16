@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
     name: http
@@ -18,3 +18,6 @@ management:
       show-details: always
     shutdown:
       enabled: true
+arthas:
+  tunnel-server: ws://192.168.50.83:7777/ws
+  agent-id: hsehdfsfghhwertyfad
